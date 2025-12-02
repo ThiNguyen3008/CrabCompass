@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
             val allDestinations = DestinationRepository.getAll(this)
 
-            // Filter an toàn
+            // Filter
             val filtered = allDestinations.filter { dest ->
                 dest.price <= budget &&
                         (dest.season == "All seasons" || dest.season == season) &&
