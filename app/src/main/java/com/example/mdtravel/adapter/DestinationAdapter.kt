@@ -36,7 +36,7 @@ class DestinationAdapter(
 
 
 
-        // Nút rate (simple example: tăng rating count, update trung bình)
+        // Rating button
         holder.btnRate.setOnClickListener {
             val newRating = 5.0 // ví dụ user rate 5 sao
             val totalScore = dest.rating * dest.ratingCount + newRating
