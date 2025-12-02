@@ -17,7 +17,7 @@ class RecommendationActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // 🔥 FIXED: Need parentheses after @Suppress
+        // Need parentheses after @Suppress
         @Suppress("DEPRECATION")
         val destinations = intent.getParcelableArrayListExtra<Destination>("destinations") ?: arrayListOf()
 
