@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Banner -->
+        <ImageView
+            android:id="@+id/bannerImage"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:src="@drawable/banner"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Budget Label -->
+        <TextView
+            android:text="Select your budget (for one person):"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#d35844"/>
+
+        <!-- Budget SeekBar -->
+        <SeekBar
+            android:id="@+id/budgetSeekBar"
+            android:max="500"
+            android:progress="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Budget Value -->
+        <TextView
+            android:id="@+id/budgetText"
+            android:text="Budget (for one person): $0"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <!-- Season -->
+        <TextView
+            android:text="Select season:"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#d35844"/>
+
+        <Spinner
+            android:id="@+id/seasonSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Interests -->
+        <TextView
+            android:text="Select your interests:"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#d35844"/>
+
+        <Spinner
+            android:id="@+id/interestSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <!-- Profile Completion -->
+        <TextView
+            android:id="@+id/profileCompletionText"
+            android:text="Selection completion: 0%"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#d35844"
+            android:layout_marginBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            android:id="@+id/profileProgressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:max="100"
+            android:progress="0"
+            android:progressTint="#d35844" />
+
+
+        <!-- Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnShowRecommendations"
+            android:text="Show Recommendations"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:backgroundTint="#d35844"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+</ScrollView>
