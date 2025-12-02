@@ -43,7 +43,7 @@ class DestinationAdapter(
             dest.ratingCount += 1
             dest.rating = totalScore / dest.ratingCount
 
-            // cập nhật UI
+           
             holder.ratingBar.rating = dest.rating.toFloat()
             holder.ratingCount.text = "${dest.ratingCount} likes"
 
