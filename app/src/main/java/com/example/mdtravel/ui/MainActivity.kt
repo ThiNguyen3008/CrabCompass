@@ -7,12 +7,26 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.mdtravel.R
 import com.example.mdtravel.data.DestinationRepository
 import com.example.mdtravel.model.Destination
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val adContainer = findViewById<LinearLayout>(R.id.adContainer)
+
+        val adView = AdView(this)
+        adView.setAdSize(AdSize.SMART_BANNER)
+        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+
+        adContainer.addView(adView)
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
 
         val budgetSeekBar = findViewById<SeekBar>(R.id.budgetSeekBar)
         val budgetText = findViewById<TextView>(R.id.budgetText)
