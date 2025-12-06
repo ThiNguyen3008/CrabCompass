@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+    // Added the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 android {
     namespace = "com.example.mdtravel"
@@ -52,4 +54,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     // Advertising
     implementation( "com.google.android.gms:play-services-ads:24.4.0" )
+    // Firebase BoM and related dependencies
+    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 }
