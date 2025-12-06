@@ -13,6 +13,8 @@ import com.example.mdtravel.model.Destination
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 class DestinationAdapter(
     private val context: Context,
@@ -44,15 +46,41 @@ class DestinationAdapter(
 
         // Rating button
         holder.btnRate.setOnClickListener {
-            val newRating = 5.0
-            val totalScore = dest.rating * dest.ratingCount + newRating
-            dest.ratingCount += 1
-            dest.rating = totalScore / dest.ratingCount
+            // Disable button so they don't spam click
+            holder.btnRate.isEnabled = false
 
+            val newRatingValue = 5.0
+            val currentTotal = dest.rating * dest.ratingCount
+            val newCount = dest.ratingCount + 1
+            val newAvg = (currentTotal + newRatingValue) / newCount
+
+            // Update Local Object (for immediate UI feedback)
+            dest.rating = newAvg
+            dest.ratingCount = newCount
             holder.ratingBar.rating = dest.rating.toFloat()
-            holder.ratingCount.text = "${dest.ratingCount} likes"
+            holder.ratingCount.text = "$newCount likes"
 
-            Toast.makeText(context, "Thanks for liking!", Toast.LENGTH_SHORT).show()
+            // Update Remote Firebase
+            if (dest.id.isNotEmpty()) {
+                val db = Firebase.firestore
+                db.collection("destinations").document(dest.id)
+                    .update(
+                        mapOf(
+                            "rating" to newAvg,
+                            "ratingCount" to newCount
+                        )
+                    )
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Thanks for liking!", Toast.LENGTH_SHORT).show()
+                        holder.btnRate.isEnabled = true
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Failed to save rating", Toast.LENGTH_SHORT).show()
+                        holder.btnRate.isEnabled = true
+                    }
+            } else {
+                Toast.makeText(context, "Error: Destination ID missing", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
