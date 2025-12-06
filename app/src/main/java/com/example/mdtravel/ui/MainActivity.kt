@@ -10,8 +10,18 @@ import com.example.mdtravel.model.Destination
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.firestore
+import android.util.Log
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var db: FirebaseFirestore
+    private var remoteDestinations = ArrayList<Destination>()
+    private var isDataLoaded = false
+    private var snapshotListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
 
+        db = Firebase.firestore
+
         val budgetSeekBar = findViewById<SeekBar>(R.id.budgetSeekBar)
         val budgetText = findViewById<TextView>(R.id.budgetText)
         val seasonSpinner = findViewById<Spinner>(R.id.seasonSpinner)
@@ -36,6 +48,13 @@ class MainActivity : AppCompatActivity() {
 
         val profileProgressBar = findViewById<ProgressBar>(R.id.profileProgressBar)
         val profileText = findViewById<TextView>(R.id.profileCompletionText)
+
+        // Disable button until Firebase data loads
+        btnShow.isEnabled = false
+        btnShow.text = "Loading Data..."
+
+        // Start listening to Firebase
+        startRealtimeUpdates(btnShow)
 
         // Seasons
         val seasons = listOf("Select season...", "Spring", "Summer", "Fall", "Winter", "All seasons")
@@ -81,14 +100,20 @@ class MainActivity : AppCompatActivity() {
 
         // Button click
         btnShow.setOnClickListener {
+            // Check if data is ready
+            if (!isDataLoaded) {
+                Toast.makeText(this, "Please wait for data to load", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
             val budget = budgetSeekBar.progress
             val season = seasonSpinner.selectedItem.toString()
             val interest = interestSpinner.selectedItem.toString()
 
             val allDestinations = DestinationRepository.getAll(this)
 
-            // Filter
-            val filtered = allDestinations.filter { dest ->
+            // Filter remote firebase data
+            val filtered = remoteDestinations.filter { dest ->
                 dest.price <= budget &&
                         (dest.season == "All seasons" || dest.season == season) &&
                         (dest.interest == interest)
@@ -101,6 +126,56 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, RecommendationActivity::class.java)
             intent.putParcelableArrayListExtra("destinations", ArrayList(filtered))
             startActivity(intent)
+        }
+    }
+
+    // Firebase helper methods
+    private fun startRealtimeUpdates(btnShow: Button) {
+        val collectionRef = db.collection("destinations")
+
+        snapshotListener = collectionRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("MainActivity", "Listen failed.", e)
+                Toast.makeText(this, "Error loading data: ${e.message}", Toast.LENGTH_LONG).show()
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                if (snapshot.isEmpty) {
+                    if (!isDataLoaded) {
+                        Toast.makeText(this, "First run: Uploading data...", Toast.LENGTH_SHORT).show()
+                        seedDatabase()
+                    }
+                } else {
+                    remoteDestinations.clear()
+                    for (document in snapshot.documents) {
+                        val dest = document.toObject(Destination::class.java)
+                        if (dest != null) {
+                            dest.id = document.id
+                            remoteDestinations.add(dest)
+                        }
+                    }
+                    isDataLoaded = true
+                    btnShow.isEnabled = true
+                    btnShow.text = "Show Recommendations"
+                }
+            }
+        }
+    }
+    private fun seedDatabase() {
+        val localList = DestinationRepository.getAll(this)
+        val batch = db.batch()
+        val collectionRef = db.collection("destinations")
+
+        for (dest in localList) {
+            val docRef = collectionRef.document()
+            batch.set(docRef, dest)
+        }
+
+        batch.commit().addOnSuccessListener {
+            Toast.makeText(this, "Data Uploaded!", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Upload Failed", Toast.LENGTH_SHORT).show()
         }
     }
 
