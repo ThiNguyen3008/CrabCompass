@@ -27,15 +27,23 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
+        <!-- Recommendation screen -->
         <activity android:name=".ui.RecommendationActivity" />
 
+        <!-- Main screen -->
+        <activity android:name=".ui.MainActivity" />
+
+        <!-- NEW IntroActivity (LAUNCHER) -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.IntroActivity"
             android:exported="true">
+
+            <!-- Launcher now points here -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
     </application>
