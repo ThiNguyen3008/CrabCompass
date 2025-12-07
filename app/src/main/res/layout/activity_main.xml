@@ -23,7 +23,7 @@
             <ImageView
                 android:id="@+id/bannerImage"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="370dp"
                 android:src="@drawable/banner"
                 android:scaleType="centerCrop"
                 android:layout_marginBottom="16dp"/>
