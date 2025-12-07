@@ -5,10 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Destination(
-    // Added this ID field to track the Firestore Document ID
     var id: String = "",
-
-    // All fields must have default values for Firebase to work
     val name: String = "",
     val city: String = "",
     val price: Int = 0,
