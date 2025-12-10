@@ -23,9 +23,13 @@ class MainActivity : AppCompatActivity() {
     private var isDataLoaded = false
     private var snapshotListener: ListenerRegistration? = null
 
+    private val PREFS_NAME = "user_prefs"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
         val adContainer = findViewById<LinearLayout>(R.id.adContainer)
 
@@ -71,14 +75,27 @@ class MainActivity : AppCompatActivity() {
         )
         interestSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, interests)
 
-        // Budget text update
-        budgetText.text = "Budget (for one person): $${budgetSeekBar.progress}"
+        val savedBudget = sharedPref.getInt("budget", 0)
+        val savedSeason = sharedPref.getString("season", "Select season...")
+        val savedInterest = sharedPref.getString("interest", "Select interest...")
+        budgetSeekBar.progress = savedBudget
+
+        budgetText.text = "Budget (for one person): $$savedBudget"
+        seasonSpinner.setSelection(seasons.indexOf(savedSeason))
+        interestSpinner.setSelection(interests.indexOf(savedInterest))
+
         updateProfileCompletion(profileProgressBar, profileText, budgetSeekBar, seasonSpinner, interestSpinner)
 
         budgetSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
                 budgetText.text = "Budget (for one person): $$progress"
                 updateProfileCompletion(profileProgressBar, profileText, budgetSeekBar, seasonSpinner, interestSpinner)
+
+                // Save budget locally
+                with(sharedPref.edit()) {
+                    putInt("budget", progress)
+                    apply()
+                }
             }
             override fun onStartTrackingTouch(sb: SeekBar?) {}
             override fun onStopTrackingTouch(sb: SeekBar?) {}
@@ -87,6 +104,11 @@ class MainActivity : AppCompatActivity() {
         seasonSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, pos: Int, id: Long) {
                 updateProfileCompletion(profileProgressBar, profileText, budgetSeekBar, seasonSpinner, interestSpinner)
+                // Save season locally
+                with(sharedPref.edit()) {
+                    putString("season", seasonSpinner.selectedItem.toString())
+                    apply()
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -94,6 +116,11 @@ class MainActivity : AppCompatActivity() {
         interestSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, pos: Int, id: Long) {
                 updateProfileCompletion(profileProgressBar, profileText, budgetSeekBar, seasonSpinner, interestSpinner)
+                // Save interest locally
+                with(sharedPref.edit()) {
+                    putString("interest", interestSpinner.selectedItem.toString())
+                    apply()
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -105,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please wait for data to load", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            
+
             val budget = budgetSeekBar.progress
             val season = seasonSpinner.selectedItem.toString()
             val interest = interestSpinner.selectedItem.toString()
